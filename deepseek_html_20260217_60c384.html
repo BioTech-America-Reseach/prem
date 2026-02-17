@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KILINGE CHA DR WILLIAM MTANZANIA</title>
+    <!-- jspdf (imeachwa kwa ajili ya siku zijazo) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --primary-gold: #d4af37;
+            --deep-gold: #b8860b;
+            --bg-dark: #0a0f1a;
+            --card-glass: rgba(255, 255, 255, 0.07);
+            --white: #ffffff;
+            --whatsapp-green: #117535;
+            --warning-red: #ff4444;
+            --warning-bg: rgba(255, 0, 0, 0.2);
+        }
+
+        body {
+            font-family: 'Garamond', serif;
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
+                        url('https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            color: var(--white);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            width: 100%;
+            border-bottom: 2px solid var(--primary-gold);
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .dr-title {
+            font-size: 2.5rem;
+            letter-spacing: 3px;
+            color: var(--primary-gold);
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+            margin: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: 30px auto;
+            background: var(--card-glass);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h2 { color: var(--primary-gold); text-align: center; }
+
+        label { display: block; margin-top: 15px; font-weight: bold; color: var(--primary-gold); }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--primary-gold);
+            background: rgba(0,0,0,0.3);
+            color: white;
+            box-sizing: border-box;
+        }
+
+        .btn-magic {
+            background: linear-gradient(135deg, var(--primary-gold), var(--deep-gold));
+            color: #000;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 900;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            transition: 0.3s;
+        }
+
+        .btn-magic:hover { transform: scale(1.02); box-shadow: 0 0 20px var(--primary-gold); }
+
+        /* MENU BUTTONS */
+        .service-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .btn-service {
+            background: transparent;
+            border: 1px solid var(--primary-gold);
+            color: var(--primary-gold);
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-service.active { background: var(--primary-gold); color: black; }
+
+        /* WHATSAPP FLOAT */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--whatsapp-green);
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 4px 15px rgba(43, 4, 68, 0.4);
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        #cards-container { 
+            display: none; 
+            gap: 20px; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            padding: 20px; 
+            transition: all 0.3s ease;
+        }
+        .card { 
+            width: 260px; 
+            height: 400px; 
+            perspective: 1000px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .card.expanded { 
+            width: 500px; 
+            height: 600px; 
+            z-index: 10;
+            box-shadow: 0 0 30px var(--primary-gold);
+        }
+        .card:not(.expanded) {
+            opacity: 0.7;
+        }
+        .card.expanded ~ .card {
+            opacity: 0.3;
+            transform: scale(0.9);
+        }
+        .card-inner { 
+            position: relative; 
+            width: 100%; 
+            height: 100%; 
+            transition: 0.8s; 
+            transform-style: preserve-3d; 
+        }
+        .card.flipped .card-inner { transform: rotateY(180deg); }
+        .card-front, .card-back { 
+            position: absolute; 
+            width: 100%; 
+            height: 100%; 
+            backface-visibility: hidden; 
+            border-radius: 15px; 
+            border: 2px solid var(--primary-gold); 
+            overflow-y: auto;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        .card-back { 
+            background: #1b0606; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.3rem; 
+            color: var(--primary-gold); 
+        }
+        .card-back small {
+            font-size: 0.9rem;
+            color: #ccc;
+            margin-top: 10px;
+            text-align: center;
+        }
+        .card-front { 
+            background: white; 
+            color: black; 
+            transform: rotateY(180deg); 
+        }
+
+        /* Phone section for appointment/dawa */
+        .phone-section {
+            margin-top: 20px;
+            background: rgba(1, 19, 11, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .country-code-select {
+            display: flex;
+            gap: 10px;
+        }
+        .country-code-select select {
+            width: 40%;
+        }
+        .country-code-select input {
+            width: 60%;
+        }
+        .error-message {
+            color: #ff6b6b;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        .success-message {
+            color: #4CAF50;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* Send button for results */
+        #send-results-container {
+            display: none;
+            text-align: center;
+            margin: 20px auto;
+            width: 90%;
+            max-width: 500px;
+        }
+        .send-btn {
+            background: var(--whatsapp-green);
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+        .send-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px var(--whatsapp-green);
+        }
+        /* Warning area */
+        #warning-area {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--warning-bg);
+            border: 2px solid var(--warning-red);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
+            animation: warningPulse 1s infinite;
+        }
+        @keyframes warningPulse {
+            0% { box-shadow: 0 0 30px rgba(255, 0, 0, 0.5); }
+            50% { box-shadow: 0 0 60px rgba(255, 0, 0, 0.8); }
+            100% { box-shadow: 0 0 30px rgba(255, 0, 0, 0.5); }
+        }
+        .warning-title {
+            color: var(--warning-red);
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .warning-text {
+            color: white;
+            font-size: 1.2rem;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1 class="dr-title">DR. WILLIAM MTANZANIA</h1>
+    <p style="color: #f8f2f2; letter-spacing: 2px;">HUDUMA ZA KITABIBU NA RAMLI ASILIA</p>
+</header>
+
+<div class="service-menu">
+    <button class="btn-service active" onclick="switchPage('ramli', this)">Kilinge cha Ramli</button>
+    <button class="btn-service" onclick="switchPage('appointment', this)">Miadi</button>
+    <button class="btn-service" onclick="switchPage('dawa', this)">Agiza Dawa</button>
+    <button class="btn-service" onclick="switchPage('malalamiko', this)">Malalamiko</button>
+</div>
+
+<!-- WARNING AREA (itaonekana kwa sekunde 2) -->
+<div id="warning-area" style="display: none;">
+    <div class="warning-title">⚠️ O N Y O  K U B W A ⚠️</div>
+    <div class="warning-text">Dr. William ameona kwenye roho yako ... usiendelee kabla hujajiandaa kiroho. Kitu kibaya kimepita njia yako. Soma kwa makini!</div>
+</div>
+
+<!-- PAGE RAMLI (iliyo na fomu nyepesi) -->
+<div id="page-ramli" class="container">
+    <h2>RAMLI YA AFYA NA NYOTA</h2>
+    <label>Jina lako kamili:</label>
+    <input type="text" id="full-name" placeholder="Mfano: Juma Omary">
+    
+    <label>Jinsia yako:</label>
+    <select id="gender">
+        <option value="Mwanaume">Mwanaume</option>
+        <option value="Mwanamke">Mwanamke</option>
+    </select>
+
+    <label>Tarehe uliozaliwa:</label>
+    <div style="display:flex; gap:10px;">
+        <select id="birth-day">
+            <script>for(let i=1;i<=31;i++) document.write(`<option value="${i}">${i}</option>`);</script>
+        </select>
+        <select id="birth-month">
+            <script>
+                const miezi = ["Januari","Februari","Machi","Aprili","Mei","Juni","Julai","Agosti","Septemba","Oktoba","Novemba","Desemba"];
+                miezi.forEach((m, i) => document.write(`<option value="${i+1}">${m}</option>`));
+            </script>
+        </select>
+    </div>
+    <p style="font-size:0.8rem; color:#ccc;">(Huna haja ya kuweka mwaka wala namba ya simu hapa)</p>
+
+    <button class="btn-magic" onclick="anzaRamli()">NIANZIE RAMLI YANGU</button>
+</div>
+
+<div id="page-appointment" class="container" style="display:none;">
+    <h2>📅 WEKA MIADI</h2>
+    <label>Jina lako:</label>
+    <input type="text" id="app-name">
+    <label>Tarehe unayotaka kuja kliniki:</label>
+    <input type="date" id="app-date">
+    <label>Sababu ya kuja:</label>
+    <textarea id="app-reason" placeholder="Elezea tatizo lako kwa ufupi..."></textarea>
+    
+    <!-- SEHEMU YA NAMBA YA SIMU KWA MIADI -->
+    <div class="phone-section">
+        <label>Namba yako ya simu (kwa mawasiliano ya haraka):</label>
+        <div class="country-code-select">
+            <select id="app-country-code">
+                <option value="+255">Tanzania (+255)</option>
+                <option value="+254">Kenya (+254)</option>
+                <option value="+256">Uganda (+256)</option>
+            </select>
+            <input type="text" id="app-phone" placeholder="Mfano: 712345678" maxlength="9">
+        </div>
+        <div id="app-phone-error" class="error-message"></div>
+    </div>
+    
+    <button class="btn-magic" onclick="tumaAppointment()">TUMA MIADI KWA WHATSAPP</button>
+</div>
+
+<div id="page-dawa" class="container" style="display:none;">
+    <h2>🌿AGIZA DAWA ASILIA</h2>
+    <label>Dawa unayohitaji:</label>
+    <select id="dawa-type">
+        <option value="Dawa ya Nguvu za Kiume">Dawa ya Nguvu za Kiume</option>
+        <option value="Dawa ya Vidonda vya Tumbo">Dawa ya Vidonda vya Tumbo</option>
+        <option value="Dawa ya Mapenzi/Mvuto">Dawa ya Mapenzi/Mvuto</option>
+        <option value="Dawa ya Kusafisha Nyota">Dawa ya Kusafisha Nyota</option>
+        <option value="Dawa ya Ngiri">Dawa ya Ngiri</option>
+        <option value="Dawa ya Minyoo">Dawa ya Minyoo</option>
+        <option value="Dawa ya kutoa sumu">Dawa ya kutoa sumu mwilini</option>
+        <option value="Dawa ya kutoa uchawi">Dawa ya kutoa uchawi mwilini</option>
+        <option value="Dawa zingine">Dawa zingine (taja kwenye maelezo)</option>
+    </select>
+    <label>Mahali unapoishi (kwa delivery):</label>
+    <input type="text" id="dawa-location" placeholder="Mkoa na mtaa...">
+    
+    <!-- SEHEMU YA NAMBA YA SIMU KWA ODA YA DAWA -->
+    <div class="phone-section">
+        <label>Namba yako ya simu (tukupigie kuhusu utoaji):</label>
+        <div class="country-code-select">
+            <select id="dawa-country-code">
+                <option value="+255">Tanzania (+255)</option>
+                <option value="+254">Kenya (+254)</option>
+                <option value="+256">Uganda (+256)</option>
+            </select>
+            <input type="text" id="dawa-phone" placeholder="Mfano: 712345678" maxlength="9">
+        </div>
+        <div id="dawa-phone-error" class="error-message"></div>
+    </div>
+    
+    <button class="btn-magic" onclick="tumaOda()">TUMA ODA KWA WHATSAPP</button>
+</div>
+
+<div id="page-malalamiko" class="container" style="display:none;">
+    <h2>⚠️ MALALAMIKO / MAONI</h2>
+    <label>Ujumbe wako:</label>
+    <textarea id="msg-content" rows="5" placeholder="Andika hapa..."></textarea>
+    <button class="btn-magic" onclick="tumaLalamiko()">TUMA KWA DR. WILLIAM</button>
+</div>
+
+<div id="loading-area" style="display:none; text-align:center; margin-top:20px;">
+    <img src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHJ6am96am96am96am96am96am96am96am96am96am96am96/3o7TKMGpxxSAt/giphy.gif" width="100">
+    <p>Dr. William anachambua nyota zako ... subiri kidogo ...</p>
+</div>
+
+<div id="cards-container">
+    <!-- Cards zitaingizwa na JavaScript -->
+</div>
+
+<!-- KITUFE CHA KUTUMA MATOKEO KWA WHATSAPP (kinaonekana baada ya kadi) -->
+<div id="send-results-container">
+    <button class="send-btn" onclick="tumaMatokeoKwaWhatsApp()">📲 TUMA MATOKEO YOTE KWA DR. WILLIAM</button>
+</div>
+
+<div class="whatsapp-float" onclick="window.open('https://wa.me/255762286282', '_blank')">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="35">
+</div>
+
+<script>
+    // ==================== DATABASE KAMILI (HAKUNA ILIYOPUNGUA) ====================
+    // Sifa za herufi – zote zimeandikwa kwa Kiswahili cha Tanzania
+    const HERUFI_DB = {
+        'A': [
+            "Wewe ni jasiri – hukimbii changamoto.",
+            "Wewe ni kiongozi – watu wanakutii kwa hiari.",
+            "Una nguvu za kiroho zinazokusaidia katika kila hatua.",
+            "Wewe ni mwaminifu na hupendi uongo.",
+            "Una kipaji cha kutatua matatizo kwa haraka.",
+            "Wewe ni mkarimu – unawasaidia wengine bila kuchoka.",
+            "Una nidhamu ya kazini na unajituma.",
+            "Wewe ni mvumilivu – hukata tamaa kwa urahisi.",
+            "Una bahati ya pesa na mafanikio.",
+            "Wewe ni mkweli – huwa unayayamba ukweli.",
+            "Una uwezo wa kuwahamasisha wengine.",
+            "Wewe una maono makubwa ya baadaye.",
+            "Una uwezo wa kusimamia watu na mali.",
+            "Wewe una hekima ya kufanya maamuzi sahihi.",
+            "Unajitolea kwa wengine kwa upendo.",
+            "Wewe una ushawishi mkubwa kwa watu.",
+            "Una uwezo wa kuleta mageuzi jamii.",
+            "Wewe una kipaji cha uongozi wa hali ya juu.",
+            "Unawavutia watu kwa utu wako mzuri.",
+            "Wewe ni mwenye bahati katika shughuli zako zote."
+        ],
+        'B': [
+            "Wewe ni mpole na una upendo mwingi.",
+            "Wewe ni msiri – huhifadhi siri za watu vizuri.",
+            "Una mvuto wa pekee unaowafanya watu wakupende.",
+            "Wewe una busara na hekima ya kutosha.",
+            "Wewe ni mkarimu na huwajali wengine.",
+            "Una uwezo wa kusikiliza kwa makini.",
+            "Wewe ni mvumilivu – huvumilia sana.",
+            "Una uwezo wa kuleta amani popote.",
+            "Wewe una hekima ya kuepuka ugomvi.",
+            "Una upendo usio na masharti.",
+            "Wewe huwasaidia maskini na wenye shida.",
+            "Una roho ya kusamehe na kusahau.",
+            "Wewe ni mnyenyekevu – hujivuni.",
+            "Una uwezo wa kuwashauri watu wenye matatizo.",
+            "Wewe ni mtulivu – hukasirika kwa urahisi.",
+            "Una uwezo wa kuleta umoja kwenye familia.",
+            "Wewe una kipaji cha kuponya kwa maneno yako.",
+            "Unawavutia wateja na marafiki kwa urahisi.",
+            "Wewe una huruma kubwa kwa wanyonge.",
+            "Una uwezo wa kujenga uhusiano mzuri na watu."
+        ],
+        'C': [
+            "Wewe ni mbunifu – unagundua mambo mapya.",
+            "Wewe ni mcheshi – unawafurahisha watu.",
+            "Una kipaji cha sanaa na ubunifu.",
+            "Wewe una akili ya haraka na unaelewa upesi.",
+            "Unapenda kujifunza mambo mapya kila siku.",
+            "Wewe ni mwerevu katika mawazo na mipango.",
+            "Una uwezo wa kuchambua mambo kwa urahisi.",
+            "Wewe una uwezo wa kuona fursa mbalimbali.",
+            "Unawavutia watu kwa tabia yako nzuri.",
+            "Wewe ni mbunifu wa kutatua matatizo.",
+            "Una uwezo wa kubadilika na kuzoea mazingira.",
+            "Wewe unapenda kusafiri na kujifunza tamaduni.",
+            "Una kipaji cha kuandika na kueleza mawazo.",
+            "Wewe ni hodari wa kuigiza na kucheza.",
+            "Una roho ya kujifunza na kufundisha wengine.",
+            "Wewe una ushawishi mkubwa kwa maneno yako.",
+            "Una uwezo wa kuwa msanii au mwandishi maarufu.",
+            "Wewe una kipaji cha kuongoza katika ubunifu.",
+            "Una uwezo wa kugeuza mawazo kuwa bidhaa.",
+            "Wewe una mawazo ya kimataifa."
+        ],
+        'D': [
+            "Wewe una msimamo mkali – haubadiliki.",
+            "Nidhamu yako kazini na maishani inaigwa.",
+            "Wewe ni mchapakazi – huchoki mpaka umalize.",
+            "Wewe ni muaminifu – watu wanakuamini.",
+            "Huyumbishwi na changamoto za maisha.",
+            "Wewe ni mwenye utaratibu – unapenda mpangilio.",
+            "Una uwezo wa kusimamia miradi mikubwa.",
+            "Wewe ni sahihi – unajali undani wa kila jambo.",
+            "Watu wanakuamini mali zao kwa urahisi.",
+            "Wewe una nguvu ya kazi – huchoki haraka.",
+            "Una uwezo wa kufanya kazi kwa muda mrefu.",
+            "Wewe una malengo na unafanya kazi kuyafikia.",
+            "Una nidhamu ya kujiepusha na vishawishi.",
+            "Wewe ni mtulivu – hupotezi mwelekeo.",
+            "Unajitolea kwa kazi yako kwa bidii.",
+            "Wewe una kipaji cha uongozi wa kiutendaji.",
+            "Una uwezo wa kuhamasisha timu kufanya kazi.",
+            "Wewe una heshima kubwa miongoni mwa wenzako.",
+            "Una uwezo wa kutatua migogoro kwa busara.",
+            "Wewe una nguvu ya kusimamia rasilimali."
+        ],
+        'E': [
+            "Unapenda uhuru wa akili na mwili.",
+            "Asili yako ni kusafiri na kujifunza mambo mapya.",
+            "Wewe ni mwerevu katika kuchambua mambo magumu.",
+            "Unawavutia watu kwa wepesi wako wa kuzoeana.",
+            "Wewe ni mdadisi – unapenda kuchunguza.",
+            "Una uwezo wa kufundisha na kueleza kwa urahisi.",
+            "Wewe una akili ya haraka na unaelewa upesi.",
+            "Una uwezo wa kubadilika na kuzoea mazingira.",
+            "Wewe unapenda kusafiri na kujifunza tamaduni mpya.",
+            "Una kipaji cha kuandika na kueleza mawazo.",
+            "Wewe ni hodari wa kuigiza na kuleta maisha katika hadithi.",
+            "Una uwezo wa kuona fursa ambapo wengine wanaona shida.",
+            "Wewe ni mcheshi – unawafurahisha watu.",
+            "Una roho ya kujifunza kila siku kitu kipya.",
+            "Wewe una ushawishi mkubwa kwa hoja zako.",
+            "Una uwezo wa kufanya maamuzi ya haraka na sahihi.",
+            "Wewe una kipaji cha lugha na mawasiliano.",
+            "Una uwezo wa kuwa mwalimu bora.",
+            "Wewe una uvumilivu wa kufundisha wengine.",
+            "Unawavutia wanafunzi na wafuasi kwa urahisi."
+        ]
+    };
+
+    // SIFA_DB ina sifa 20 na kazi 5 kwa kila herufi (zote kwa Kiswahili)
+    const SIFA_DB = {
+        'A': {
+            traits: HERUFI_DB['A'],
+            careers: [
+                { title: "Jeshi / Ulinzi", desc: "Una uwezo wa kulinda na kuongoza. Kazi za ulinzi na usalama zitakufaa sana." },
+                { title: "Uongozi wa serikali", desc: "Sifa zako za ujasiri na uongozi zinakufaa katika siasa au utawala." },
+                { title: "Biashara ya kimataifa", desc: "Akili yako ya haraka na ujasiri vitakufanya ufanikiwe katika biashara kubwa." },
+                { title: "Mkurugenzi wa kampuni", desc: "Uwezo wako wa kusimamia na kuongoza utakufaa kama mkurugenzi." },
+                { title: "Mkufunzi wa maisha", desc: "Uwezo wako wa kuhamasisha na kusaidia wengine utakufaa kama mkufunzi." }
+            ]
+        },
+        'B': {
+            traits: HERUFI_DB['B'],
+            careers: [
+                { title: "Mshauri wa familia", desc: "Upole na busara yako inakufaa kuwasaidia wengine katika mahusiano." },
+                { title: "Daktari wa magonjwa ya akili", desc: "Uwezo wako wa kusikiliza na kuelewa hisia za watu ni zawadi." },
+                { title: "Kiongozi wa dini", desc: "Mvuto wako wa kiroho na upendo unakufaa kuwaongoza wengine kiroho." },
+                { title: "Mfanyakazi wa ustawi wa jamii", desc: "Moyo wako wa kujali unakufaa kusaidia jamii." },
+                { title: "Mwalimu wa watoto", desc: "Uvumilivu na upendo wako kwa watoto utakufanya mwalimu bora." }
+            ]
+        },
+        'C': {
+            traits: HERUFI_DB['C'],
+            careers: [
+                { title: "Msanii (muziki, uchoraji)", desc: "Ubunifu wako na ucheshi vitakufanya uwe msanii maarufu." },
+                { title: "Mwandishi", desc: "Uwezo wako wa kuchambua na kueleza mambo unakufaa kuwa mwandishi." },
+                { title: "Mjasiriamali wa teknolojia", desc: "Akili yako ya haraka na ubunifu utakusaidia kuanzisha biashara za kisasa." },
+                { title: "Mkurugenzi wa ubunifu", desc: "Uwezo wako wa kuona mambo kwa mtazamo mpya utakufaa katika tasnia ya ubunifu." },
+                { title: "Mwalimu wa sanaa", desc: "Unaweza kufundisha wengine ubunifu wako." }
+            ]
+        },
+        'D': {
+            traits: HERUFI_DB['D'],
+            careers: [
+                { title: "Meneja wa miradi", desc: "Nidhamu na uwezo wako wa kusimamia unakufaa kuwa meneja bora." },
+                { title: "Mhasibu", desc: "Usahihi na uaminifu wako utakufanya mhasibu anayeaminika." },
+                { title: "Mhandisi", desc: "Ustadi wako wa kuchambua na kutatua matatizo unakufaa katika uhandisi." },
+                { title: "Mratibu wa shughuli", desc: "Uwezo wako wa kutekeleza na kusimamia unakufaa kuratibu." },
+                { title: "Meneja wa rasilimali watu", desc: "Uwezo wako wa kuwaunganisha watu unakufaa katika usimamizi." }
+            ]
+        },
+        'E': {
+            traits: HERUFI_DB['E'],
+            careers: [
+                { title: "Mwalimu", desc: "Uwezo wako wa kueleza na kufundisha ni zawadi." },
+                { title: "Mtafiti", desc: "Upendo wako wa kutafiti na kuchambua unakufaa katika utafiti." },
+                { title: "Mkurugenzi wa utalii", desc: "Upendo wako wa safari na mabadiliko unakufaa kuwaongoza wengine." },
+                { title: "Mwandishi wa riwaya", desc: "Ubunifu wako na hisia safi zitakusaidia kuandika riwaya zenye mvuto." },
+                { title: "Mkufunzi wa maisha", desc: "Uvumilivu wako na uwezo wa kugeuza mambo utawasaidia wengine." }
+            ]
+        }
+    };
+
+    // NYOTA_DESC – Kila nyota ina maradhi 20 na lishe 20 (zimeandikwa kwa Kiswahili)
+    const NYOTA_DESC = {
+        1: { 
+            n: "KONDE (ARIES)", 
+            h: [
+                "Unaweza kupata maumivu ya kichwa mara kwa mara kwa sababu unafikiri sana.",
+                "Macho yako huchoka haraka unapotumia simu au kompyuta kwa muda mrefu.",
+                "Shinikizo la damu linaweza kukusumbua ukikosa usingizi.",
+                "Mikono na vidole vyako vinaweza kufa ganzi ukikaa sehemu moja kwa muda.",
+                "Meno yako ni nyeti kwa baridi au moto, epuka vinywaji baridi sana au moto sana.",
+                "Unaweza kuhisi kizunguzungu ukisimama ghafla, simama taratibu.",
+                "Masikio yako yanaweza kuziba ukiwa na mafua au mawazo mengi.",
+                "Kumbukumbu yako inaweza kukusaliti kidogo ukichoka, ni kawaida.",
+                "Unaweza kukosa usingizi (insomnia) ukiwa na mawazo mengi.",
+                "Mapafu yako yanaweza kuathiriwa na mabadiliko ya ghafla ya hewa.",
+                "Unaweza kuwa na mzio wa vumbi au moshi.",
+                "Moyo wako unahitaji kupumzika vya kutosha, usijikaze kupita kiasi.",
+                "Unaweza kupata maumivu ya mgongo ukikaa vibaya.",
+                "Misuli yako inaweza kukaza ukifanya kazi nyingi bila kunyooka.",
+                "Unaweza kuwa na upungufu wa damu (anemia) ukila lishe duni.",
+                "Ngozi yako inaweza kukauka wakati wa baridi.",
+                "Unaweza kupatwa na mafua mara kwa mara usipojilinda.",
+                "Shinikizo la damu linaweza kuongezeka ukiwa na msongo.",
+                "Unaweza kuwa na matatizo ya mmeng'enyo wa chakula ukila haraka.",
+                "Mifupa yako inaweza kuwa dhaifu ukikosa madini ya kalsiamu."
+            ], 
+            d: [
+            "Juisi ya tikiti maji: Osha tunda, kata vipande, saga na kunywa asubuhi kuongeza maji mwilini.",
+            "Tangawizi: Chukua kipande, osha, chemsha na kunywa asubuhi kufungua mishipa ya damu.",
+            "Karoti tatu: Osha, menya na itafune jioni kuimarisha macho yako.",
+            "Samaki aipwe: Pika kwa mvuke. Protini yake inasaidia ubongo wako.",
+            "Mafuta ya zeituni: Weka kijiko kimoja kwenye mboga baada ya kupika ili kulainisha mishipa ya moyo.",
+            "Mayai mawili ya kienyeji: Chemsha na ule asubuhi kupambana na uchovu.",
+            "Mdalasini: Weka kijiko kidogo kwenye uji ili kutuliza neva.",
+            "Juisi ya beetroot: Osha, menya na saga. Kunywa mara mbili kwa siku kusafisha damu.",
+            "Nanasi: Osha, menya na ule nyama yake; itasaidia tumbo kusaga chakula.",
+            "Asali mbichi: Kijiko kimoja asubuhi kabla ya kula kitu kingine kuongeza kinga ya mwili.",
+            "Parachichi nusu: Lioshe na ule kila siku; mafuta yake yanalinda ngozi na moyo.",
+            "Mbegu za maboga: Kausha na kaanga bila mafuta, tafuna kiganja kimoja kuimarisha akili.",
+            "Papai: Osha, menya na ule vipande vikubwa jioni kusafisha utumbo.",
+            "Mchicha: Osha majani, pika kwa dakika tano tu ili usipoteze virutubisho.",
+            "Maji safi: Kunywa glasi 10 kwa siku kusafisha figo.",
+            "Komamanga: Pasua na ule mbegu zake; linazuia kansa na kusafisha mishipa.",
+            "Epuka kahawa kali: Badala yake kunywa maji ya madafu.",
+            "Maziwa ya mgando: Kunywa glasi moja mchana kuimarisha kinga ya tumbo.",
+            "Bamia tano: Osha, chemsha na kunywa maji yake yenye utelezi; ni tiba ya magoti.",
+            "Pilipili mtama: Weka kidogo kwenye chakula kufungua mishipa ya damu.",
+            "Matunda ya zambarau: Osha na ule; yanazuia seli kuzeeka haraka.",
+            "Limao na maji ya moto: Kamua limao moja kwenye maji ya moto asubuhi kuchoma mafuta.",
+            "Kabeji mbichi: Osha majani na ule kama saladi; inatengeneza kinga ya vidonda vya tumbo.",
+            "Ndizi mbivu mbili: Ile asubuhi kupata potasiamu inayolinda misuli.",
+            "Njegere mbichi: Chemsha na kula kama mboga; protini yake inajenga tishu zilizojeruhiwa.",
+            "Supu ya mifupa: Chemsha mifupa ya ng'ombe kwa saa kadhaa na kunywa supu hiyo kuimarisha mifupa.",
+            "Viazi vitamu: Osha na chemsha na maganda yake; sukari yake ni asilia.",
+            "Majani ya kunde: Osha vizuri na upike kidogo; yanasafisha macho na ngozi.",
+            "Unga wa lishe: Changanya ulezi na ngano kwa nguvu ya asili.",
+            "Chai ya mchaichai: Osha majani na chemshe, kunywa mchana kutuliza akili."
+            ]
+        },
+        2: { 
+            n: "FARASI (TAURUS)", 
+            h: [
+                "Koo lako linaweza kukwaruza au kuuma ukiongea sana.",
+                "Tezi yako ya nyironi inaweza kusababisha mabadiliko ya uzito usipolinda lishe.",
+                "Shingo yako inaweza kukakamaa ukikaa sehemu moja kwa muda mrefu.",
+                "Mabega yako huchukua mkazo wa mawazo yako, hivyo yanaweza kuuma.",
+                "Sukari yako inaweza kupanda ukizidisha vyakula vitamu.",
+                "Uzito wako unaweza kuongezeka haraka ukila chakula kingi.",
+                "Mafua na kikohozi vinaweza kukupata mara kwa mara kwenye mazingira yenye vumbi.",
+                "Masikio yako yanaweza kuziba ukiwa na mafua.",
+                "Mgongo wako wa chini unaweza kuuma unapoinama sana.",
+                "Shinikizo la damu linaweza kuongezeka ukiwa na msongo.",
+                "Unaweza kupatwa na maumivu ya kichwa ya sinus.",
+                "Ngozi yako inaweza kukauka usipokunywa maji ya kutosha.",
+                "Unaweza kuwa na upungufu wa vitamini D ukikosa jua.",
+                "Misuli ya miguu inaweza kukaza ukitembea sana.",
+                "Unaweza kupatwa na maumivu ya goti kutokana na uzito.",
+                "Mfumo wako wa kinga unaweza kuwa dhaifu ukila lishe duni.",
+                "Unaweza kuwa na mzio wa vyakula fulani.",
+                "Shinikizo la damu linaweza kushuka ghafla.",
+                "Unaweza kupata maumivu ya viungo wakati wa baridi.",
+                "Meno yako yanaweza kuoza ukisahau kusafisha."
+            ], 
+            d: [
+                "Tufaha moja kila siku: Osha kwa maji ya moto kidogo, ule asubuhi kusafisha tumbo na koo.",
+                "Karanga mbichi: Osha kiganja kimoja na ule; mafuta yake yanalinda sauti yako.",
+                "Limao na asali: Kamua limao moja kwenye glasi ya maji vuguvugu, weka asali kijiko kimoja na unywe asubuhi.",
+                "Supu ya kuku wa kienyeji: Chemsha kuku na tangawizi na kitunguu saumu; kunywa supu hii kuimarisha kinga ya koo.",
+                "Ndizi mbivu: Ile asubuhi saa tano; inakupa nguvu na kuzuia uchovu.",
+                "Mihogo ya kuchemsha: Osha na chemsha; inakupa nguvu ya kudumu.",
+                "Mapera mawili: Osha vizuri na ule; yana vitamini C nyingi inayolinda koo lako.",
+                "Bamia mbichi: Osha na kata vipande vidogo, ule kama saladi; utelezi wake unalainisha shingo.",
+                "Dengu za kuchemsha: Kula dengu badala ya nyama nyekundu; ni rafiki wa moyo.",
+                "Maziwa safi: Chemsha na unywe glasi moja jioni kulainisha koo.",
+                "Zabibu: Osha kwa maji mengi na ule kiganja kimoja; sukari yake asilia inakupa nguvu.",
+                "Chai ya mchaichai: Osha majani na chemshe; inaondoa gesi na harufu mbaya.",
+                "Kisamvu: Osha vizuri na chemshe; kinarutubisha damu yako.",
+                "Viazi vikuu: Osha na chemsha; vinakupa nguvu ya kudumu.",
+                "Maji lita tatu: Kunywa maji mengi ili ngozi na figo ziwe safi.",
+                "Juisi ya karoti: Osha na saga karoti; kunywa jioni kusaidia macho.",
+                "Kitunguu saumu: Meza punje mbili kila jioni baada ya kuzikata; ni kinga dhidi ya maradhi ya koo.",
+                "Ugali wa dona: Usitumie sembe; dona ina nyuzi zinazosaidia tumbo.",
+                "Papai la sukari: Osha na ule jioni; litakusaidia kulala vizuri.",
+                "Mafuta ya zeituni: Weka kijiko kimoja kwenye saladi; inazuia mishipa ya shingo kukaza.",
+                "Mboga za kijani: Osha jani kwa jani; kula mchicha kwa wingi kuimarisha damu.",
+                "Beetroot: Osha na chemshe kidogo kisha ule; inasafisha ini lako.",
+                "Mdalasini kwenye uji: Inatuliza akili na kuzuia msongo.",
+                "Maji ya madafu: Kunywa dafu moja kila wiki; yana madini yanayolinda mwili.",
+                "Komamanga: Pasua na ule mbegu zake; inasaidia tezi yako.",
+                "Chai ya kijani: Kunywa asubuhi kuchoma mafuta ya ziada.",
+                "Viazi mbatata: Osha na chemsha na maganda yake; maganda yana madini muhimu.",
+                "Matikiti maji: Ule sehemu nyeupe ya ndani; inalinda figo zako.",
+                "Unga wa lishe: Changanya ngano na ulezi; kunywa uji huu ukiwa na asali.",
+                "Majani ya kunde: Osha vizuri na upike kidogo; yanaimarisha mifupa."
+            ]
+        }
+    };
+
+    // AYURVEDA_DB – Tiba 25 za asili (zimeandikwa kwa Kiswahili cha Tanzania)
+    const AYURVEDA_DB = {
+        "Tangawizi": {
+            name: "Tangawizi",
+            scientific: "Zingiber officinale",
+            uses: [
+                { condition: "Kuumwa tumbo (Indigestion)", recipe: "Chukua kipande kidogo cha tangawizi, saga, changanya na chumvi au sukari nyekundu. Kula mara mbili kwa siku kabla ya chakula." },
+                { condition: "Maumivu ya sikio", recipe: "Tone tone la juisi ya tangawizi yenye joto joto (si moto) kwenye sikio lenye kuumwa. Usitumie kama kuna usaha." },
+                { condition: "Kukosa sauti", recipe: "Kausha tangawizi, saga kuwa unga. Kijiko kimoja changanya na asali, kunywa mara tatu kwa siku." },
+                { condition: "Mafua / Kikohozi", recipe: "Chemsha kipande cha tangawizi na maji, kunywa maji yake mara mbili kwa siku." }
+            ]
+        },
+        "Kamanga": {
+            name: "Komamanga",
+            scientific: "Punica granatum",
+            uses: [
+                { condition: "Kuhara / Kichochoro", recipe: "Kausha maganda ya komamanga, saga. Kijiko kimoja changanya na sukari, kunywa mara mbili kwa siku." },
+                { condition: "Kuwashwa tumbo (Hyperacidity)", recipe: "Kula tunda la komamanga lenyewe kwa wingi." },
+                { condition: "Kutoa damu mwanzoni", recipe: "Juisi ya komamanga vijiko viwili na sukari, kunywa mara mbili kwa siku." },
+                { condition: "Harufu mbaya mdomoni", recipe: "Tafuna mbegu za komamanga baada ya kula." }
+            ]
+        },
+        "Amla": {
+            name: "Amla (Nyeupe)",
+            scientific: "Emblica officinalis",
+            uses: [
+                { condition: "Afya kwa ujumla", recipe: "Kula Amla mbichi mara kwa mara huongeza nguvu na kinga ya mwili." },
+                { condition: "Kiwango cha sukari (Diabetes)", recipe: "Juisi ya Amla na juisi ya manjano (Haldi) vijiko viwili kila moja, kunywa mara mbili kwa siku." },
+                { condition: "Kupunguza msongo (Stress)", recipe: "Saga Amla na maziwa ya mgando, paka kwenye paji la uso." },
+                { condition: "Kuzuia mvi na kudumisha nywele", recipe: "Loweka Amla usiku kucha, asubuhi paka maji yake kwenye nywele kabla ya kuoga." }
+            ]
+        },
+        "Mdalasini": {
+            name: "Mdalasini",
+            scientific: "Cinnamomum zeylanicum",
+            uses: [
+                { condition: "Kuhara", recipe: "Kijiko kimoja cha unga wa mdalasini na maji ya moto, kunywa mara mbili kwa siku." },
+                { condition: "Kichefuchefu", recipe: "Kijiko kimoja cha unga wa mdalasini na asali, kunywa." },
+                { condition: "Maumivu ya kichwa", recipe: "Saga mdalasini na maji, paka kwenye paji la uso." },
+                { condition: "Kukosa hamu ya kula", recipe: "Chemsha mdalasini na tangawizi, kunywa maji yake kabla ya chakula." }
+            ]
+        },
+        "Dhania": {
+            name: "Dhania (majani au mbegu)",
+            scientific: "Coriandrum sativum",
+            uses: [
+                { condition: "Mafua na kikohozi", recipe: "Chemsha mbegu za dhania, ongeza sukari na manjano, kunywa mara tatu kwa siku." },
+                { condition: "Minyoo tumboni", recipe: "Kijiko kimoja cha unga wa dhania na sukari nyekundu, kula asubuhi kwa siku tano." },
+                { condition: "Kuchoka kwa jua", recipe: "Chemsha mbegu za dhania, ongeza sukari na chumvi kidogo, kunywa mara kwa mara." },
+                { condition: "Homa", recipe: "Chemsha dhania na tangawizi, kunywa maji yake." }
+            ]
+        },
+        "Iliki": {
+            name: "Iliki (kardiamu)",
+            scientific: "Elettaria cardamomum",
+            uses: [
+                { condition: "Kwikwi (Hiccough)", recipe: "Tafuna iliki mbili mbili (usiwe zaidi ya 4 kwa siku)." },
+                { condition: "Kutapika", recipe: "Unga wa iliki uliokaangwa kwa samli, kijiko kidogo na asali mara tatu kwa siku." },
+                { condition: "Harufu mbaya mdomoni", recipe: "Tafuna iliki baada ya kula." },
+                { condition: "Kuhara na kutapika", recipe: "Choma maganda ya iliki, chukua majivu yake kijiko kimoja na asali." }
+            ]
+        },
+        "Samli (Ghee)": {
+            name: "Samli (siagi iliyoyeyushwa)",
+            scientific: "Clarified Butter",
+            uses: [
+                { condition: "Vidonda na majeraha", recipe: "Paka samli kwenye kidonda mara kwa mara." },
+                { condition: "Kukosa hamu ya kula", recipe: "Changanya samli na Hing na Jeera, weka kwenye chakula." },
+                { condition: "Kumbukumbu kwa watoto", recipe: "Kula samli kidogo kila siku huongeza kumbukumbu." },
+                { condition: "Kuvimbiwa", recipe: "Kijiko kimoja cha samli kwenye maziwa ya joto kabla ya kulala." }
+            ]
+        },
+        "Manjano": {
+            name: "Manjano (Haldi)",
+            scientific: "Curcuma longa",
+            uses: [
+                { condition: "Kiwango cha sukari", recipe: "Juisi ya manjano na juisi ya Amla vijiko viwili kila moja, kunywa mara mbili kwa siku." },
+                { condition: "Chunusi", recipe: "Paka paste ya manjano kwenye chunusi mara mbili kwa siku." },
+                { condition: "Mafua", recipe: "Kijiko kimoja cha manjano na maziwa ya joto na sukari, kunywa mara mbili kwa siku." },
+                { condition: "Mzio wa ngozi", recipe: "Chemsha manjano na maji, kisha tumia maji hayo kuosha sehemu yenye mzio." }
+            ]
+        },
+        "Hing": {
+            name: "Hing (Uvumba wa kula)",
+            scientific: "Ferula narthex",
+            uses: [
+                { condition: "Maumivu ya tumbo", recipe: "Changanya Hing na maji, paka kwenye kitovu na kuzunguka." },
+                { condition: "Maumivu ya jino", recipe: "Kaaanga Hing kwa samli, weka kwenye jino lenye kuumwa." },
+                { condition: "Kukosa hamu ya kula", recipe: "Kijiko kidogo cha Hing kilichokaangwa kwenye samli, changanya na maziwa ya mgando, kunywa." },
+                { condition: "Tumbo kujaa gesi kwa watoto", recipe: "Changanya Hing na maji, paka kwenye tumbo la mtoto." }
+            ]
+        },
+        "Jayphal": {
+            name: "Jayphal (kungu)",
+            scientific: "Myristica fragrans",
+            uses: [
+                { condition: "Kuhara kwa watoto", recipe: "Saga Jayphal, chukua dozi ndogo (kichaa cha kijiko) changanya na maziwa, mpe mtoto mara 3-4 kwa siku." },
+                { condition: "Mtoto kukosa usingizi na kuwa na wasiwasi", recipe: "Dozi ndogo ya Jayphal kwenye maziwa hulaza mtoto." },
+                { condition: "Madoa meusi usoni", recipe: "Saga Jayphal kwenye maziwa, paka usoni." },
+                { condition: "Maumivu ya tumbo kutokana na kuhara", recipe: "Kijiko kimoja cha unga wa Jayphal na maji ya moto, kunywa mara 4-5 kwa siku." }
+            ]
+        },
+        "Jeera": {
+            name: "Jeera (bizari)",
+            scientific: "Cuminum cyminum",
+            uses: [
+                { condition: "Kuumwa tumbo", recipe: "Unga wa jeera uliokaangwa na chumvi, kijiko kimoja na maji ya moto mara tatu kwa siku." },
+                { condition: "Kuhara", recipe: "Kijiko kimoja cha jeera kwenye glasi ya maziwa ya mgando, mara nne kwa siku." },
+                { condition: "Kiwango cha asidi tumboni", recipe: "Kaanga jeera kwenye samli, weka kwenye wali au ugali." },
+                { condition: "Magonjwa ya ngozi", recipe: "Kijiko kimoja cha jeera kilichokaangwa na maziwa, kunywa mara mbili kwa siku." }
+            ]
+        },
+        "Pilipili manga": {
+            name: "Pilipili manga",
+            scientific: "Piper nigrum",
+            uses: [
+                { condition: "Magonjwa ya ngozi", recipe: "Kijiko kimoja cha unga wa pilipili na samli na asali, kunywa mara mbili kwa siku." },
+                { condition: "Kupoteza sauti", recipe: "Changanya pilipili na mafuta ya nazi, paka kwenye koo." },
+                { condition: "Kwikwi", recipe: "Kijiko kimoja cha pilipili iliyokaangwa na samli, weka mdomoni." },
+                { condition: "Kuumwa tumbo", recipe: "Kijiko kimoja cha pilipili na sukari, kunywa mara mbili kwa siku." }
+            ]
+        },
+        "Karela": {
+            name: "Karela (ubwabwa)",
+            scientific: "Momordica charantia",
+            uses: [
+                { condition: "Kuumwa tumbo", recipe: "Juisi ya karela vijiko 5-10 mara mbili kwa siku." },
+                { condition: "Kiwango cha sukari", recipe: "Unga wa mbegu za karela kijiko kimoja na maji mara mbili kwa siku." },
+                { condition: "Kukosa hamu ya kula", recipe: "Juisi ya karela na maziwa ya mgando mara 1-2." },
+                { condition: "Magonjwa ya ngozi", recipe: "Juisi ya karela asubuhi kabla ya kula kitu." }
+            ]
+        },
+        "Kitunguu saumu": {
+            name: "Kitunguu saumu",
+            scientific: "Allium sativum",
+            uses: [
+                { condition: "Maumivu ya sikio", recipe: "Tone la juisi ya kitunguu saumu yenye joto kwenye sikio (usitumie kama kuna usaha)." },
+                { condition: "Gesi tumboni", recipe: "Juisi ya kitunguu saumu vijiko 6 na asali, kunywa mara mbili kwa siku." },
+                { condition: "Mafua na kikohozi", recipe: "Chemsha karafuu za kitunguu saumu na maji, kunywa maji hayo na sukari." },
+                { condition: "Maumivu ya viungo", recipe: "Paste ya kitunguu saumu na asali au kwenye chakula, kula mara mbili kwa siku." }
+            ]
+        },
+        "Karafuu": {
+            name: "Karafuu",
+            scientific: "Syzygium aromaticum",
+            uses: [
+                { condition: "Kikohozi", recipe: "Tafuna karafuu au kijiko kimoja cha unga na asali mara 2-3 kwa siku." },
+                { condition: "Mafua na kwikwi", recipe: "Chemsha karafuu na maji, kunywa maji hayo mara 3-4 kwa siku." },
+                { condition: "Kuumwa tumbo", recipe: "Unga wa karafuu na asali mara tatu kwa siku." },
+                { condition: "Maumivu ya jino", recipe: "Weka karafuu kwenye jino linalouma." }
+            ]
+        },
+        "Asali": {
+            name: "Asali",
+            scientific: "Honey",
+            uses: [
+                { condition: "Unene kupita kiasi", recipe: "Kijiko kimoja cha asali kwenye glasi ya maji asubuhi." },
+                { condition: "Kukosa hamu ya kula", recipe: "Asali na pilipili manga mara 3-4 kwa siku." },
+                { condition: "Kikohozi", recipe: "Asali na unga wa karafuu mara 3-4." },
+                { condition: "Vidonda na majeraha", recipe: "Changanya asali na samli, paka." }
+            ]
+        },
+        "Methi": {
+            name: "Methi (ubarwe)",
+            scientific: "Trigonella foenum-graecum",
+            uses: [
+                { condition: "Kiwango cha sukari", recipe: "Unga wa methi kijiko kimoja na maziwa mara mbili kwa siku." },
+                { condition: "Maumivu ya mwili", recipe: "Unga wa methi na jeera kwa maziwa ya joto na sukari." },
+                { condition: "Kuongeza maziwa ya mama", recipe: "Unga wa methi kijiko kimoja na maziwa na sukari asubuhi." },
+                { condition: "Mba (dandruff)", recipe: "Paka paste ya methi kwenye kichwa nusu saa kabla ya kuoga." }
+            ]
+        },
+        "Nazi": {
+            name: "Nazi",
+            scientific: "Cocos nucifera",
+            uses: [
+                { condition: "Kiwango cha asidi", recipe: "Maji ya nazi mabichi mara mbili kwa siku." },
+                { condition: "Mawe kwenye figo", recipe: "Maji ya nazi mabichi mara mbili kwa siku." },
+                { condition: "Majeraha na kuungua", recipe: "Paka mafuta ya nazi mara kwa mara." },
+                { condition: "Kukosa maji mwilini (dehydration)", recipe: "Kunywa maji ya nazi mabichi." }
+            ]
+        },
+        "Mwambe": {
+            name: "Mwambe (Neem)",
+            scientific: "Azadirachta indica",
+            uses: [
+                { condition: "Magonjwa ya ngozi", recipe: "Juisi ya majani ya mwambe na asali mara mbili kwa siku." },
+                { condition: "Vidonda na majeraha", recipe: "Paka paste ya majani ya mwambe yenye joto." },
+                { condition: "Minyoo tumboni", recipe: "Chemsha majani ya mwambe, kunywa maji hayo asubuhi kwa siku tatu." },
+                { condition: "Mba na ukurutu", recipe: "Chemsha majani ya mwambe, tumia maji hayo kuosha kichwa." }
+            ]
+        },
+        "Ndimu": {
+            name: "Ndimu",
+            scientific: "Citrus limon",
+            uses: [
+                { condition: "Kuumwa tumbo", recipe: "Juisi ya ndimu na chumvi kidogo na pilipili kabla ya chakula." },
+                { condition: "Kuchoka kwa jua", recipe: "Ndimu moja kwenye glasi ya maji na sukari na chumvi." },
+                { condition: "Kutoa damu kwenye ufizi", recipe: "Saga ganda la ndimu, paka kwenye ufizi mara mbili kwa siku." },
+                { condition: "Kukosa hamu ya kula", recipe: "Juisi ya ndimu na chumvi na pilipili kabla ya chakula." }
+            ]
+        },
+        "Kitunguu maji": {
+            name: "Kitunguu maji",
+            scientific: "Allium cepa",
+            uses: [
+                { condition: "Kuchoka kwa jua", recipe: "Kula kitunguu maji kwa wingi husaidia kuzuia kuchoka." },
+                { condition: "Mafua na kikohozi", recipe: "Kwa watoto, chemsha kitunguu maji na sukari nyekundu, kunywa maji hayo." },
+                { condition: "Kuhara", recipe: "Kata kitunguu maji, kaanga kwa samli, kula na wali." }
+            ]
+        },
+        "Pilipili ndogo": {
+            name: "Pilipili ndogo (Pippali)",
+            scientific: "Piper longum",
+            uses: [
+                { condition: "Kuumwa tumbo", recipe: "Unga wa pilipili ndogo na sukari nyekundu kabla ya chakula mara mbili kwa siku." },
+                { condition: "Mafua", recipe: "Unga wa pilipili ndogo na asali mara tatu kwa siku." },
+                { condition: "Kikohozi chenye homa", recipe: "Chemsha pilipili ndogo, tangawizi, na pilipili manga, ongeza sukari, kunywa." },
+                { condition: "Kuhara", recipe: "Changanya unga wa pilipili ndogo kwenye lita moja ya maziwa ya mgando, gawa mara nne, kunywa." }
+            ]
+        },
+        "Saunf": {
+            name: "Saunf (bizari tamu)",
+            scientific: "Foeniculum vulgare",
+            uses: [
+                { condition: "Kuumwa tumbo", recipe: "Unga wa saunf na jeera na chumvi na maji ya moto mara tatu kwa siku." },
+                { condition: "Kuhara", recipe: "Unga wa saunf na maziwa ya mgando mara 3-4 kwa siku." },
+                { condition: "Maumivu ya tumbo", recipe: "Unga wa saunf na maziwa ya mgando mara 3-4." },
+                { condition: "Harufu mbaya mdomoni", recipe: "Tafuna saunf baada ya kula." }
+            ]
+        },
+        "Mchaichai": {
+            name: "Mchaichai (Tulsi)",
+            scientific: "Ocimum sanctum",
+            uses: [
+                { condition: "Mafua na kikohozi", recipe: "Juisi ya majani ya mchaichai na asali mara mbili au tatu kwa siku." },
+                { condition: "Homa", recipe: "Chemsha majani ya mchaichai na dhania, kunywa mara tatu." },
+                { condition: "Mzio wa ngozi", recipe: "Juisi ya mchaichai mara mbili kwa siku." },
+                { condition: "Maumivu ya sikio", recipe: "Tone la juisi ya mchaichai yenye joto kwenye sikio (usitumie kama kuna usaha)." }
+            ]
+        }
+    };
+
+    // PLANET_OBESITY_DB – Sayari na unene (zimeandikwa kwa Kiswahili)
+    const PLANET_OBESITY_DB = {
+        "Jupiter": {
+            name: "Mshtarii (Jupiter)",
+            impact: "Kula kupita kiasi",
+            percentage: "30%",
+            description: "Sayari hii inapanua kila inachogusa. Ikiwa na nguvu kwenye nyota yako, utakuwa na hamu kubwa ya kula na kula kupita kiasi."
+        },
+        "Sun": {
+            name: "Jua (Sun)",
+            impact: "Kuumwa tumbo na mmeng'enyo mbaya",
+            percentage: "20%",
+            description: "Jua likiwa dhaifu, mfumo wako wa kumeng'enya chakula haufanyi kazi vizuri, hivyo chakula kinakaa tumboni na kukufanya unene."
+        },
+        "Ketu": {
+            name: "Ketu",
+            impact: "Kuvimbiwa (constipation)",
+            percentage: "15%",
+            description: "Ketu ikisumbuliwa, husababisha kuvimbiwa na sumu kujilimbikiza mwilini, hivyo kusababisha unene."
+        },
+        "Mars": {
+            name: "Mirihi (Mars)",
+            impact: "Ukosefu wa shughuli za mwili",
+            percentage: "10%",
+            description: "Mars dhaifu hukufanya uwe mvivu na usifanye mazoezi, hivyo kalori hazichomi na unene unakuja."
+        },
+        "Saturn": {
+            name: "Zohali (Saturn)",
+            impact: "Kukosa usingizi vizuri",
+            percentage: "7%",
+            description: "Zohali likiwa na mvuto mbaya, usingizi wako unakuwa mbaya, na hii huathiri homoni zinazodhibiti uzito."
+        },
+        "Mercury": {
+            name: "Zebaki (Mercury)",
+            impact: "Homoni kuharibika",
+            percentage: "6%",
+            description: "Zebaki ikiwa na dosari, homoni za mwili huharibika na kusababisha unene usio wa kawaida."
+        },
+        "Moon": {
+            name: "Mwezi (Moon)",
+            impact: "Msongo wa mawazo",
+            percentage: "5%",
+            description: "Mwezi ukiwa na mvuto mbaya, huleta msongo na wasiwasi, na watu wengi hula sana wanapofadhaika."
+        },
+        "Rahu": {
+            name: "Rahu",
+            impact: "Urithi wa kimaumbile (genetics)",
+            percentage: "4%",
+            description: "Rahu hubeba habari za urithi kutoka kwa wazazi. Kama wazazi walikuwa wanene, uwezekano wa wewe kuwa mnene ni mkubwa."
+        },
+        "Venus": {
+            name: "Zuhura (Venus)",
+            impact: "Uzee / Ujauzito",
+            percentage: "3%",
+            description: "Zuhura inahusishwa na uzuri na umri. Baada ya umri fulani au baada ya ujauzito, mwili hubadilika na unene unaweza kutokea."
+        }
+    };
+
+    // Vigezo vya programu
+    let currentResults = null;
+    let currentJina = '', currentS = '', currentM = '', currentJinsia = '';
+    let currentFullPhone = ''; // kwa ajili ya kutuma matokeo
+
+    function switchPage(pageId, btnElement) {
+        const pages = ['ramli', 'appointment', 'dawa', 'malalamiko'];
+        pages.forEach(p => document.getElementById('page-' + p).style.display = 'none');
+        document.getElementById('page-' + pageId).style.display = 'block';
+        
+        document.querySelectorAll('.btn-service').forEach(btn => btn.classList.remove('active'));
+        btnElement.classList.add('active');
+    }
+
+    // Validations za appointment na dawa
+    function validateAppPhone() {
+        const code = document.getElementById('app-country-code').value;
+        const phone = document.getElementById('app-phone').value.trim();
+        const errorDiv = document.getElementById('app-phone-error');
+        if (phone === '') { errorDiv.innerText = 'Weka namba yako ya simu.'; return false; }
+        if (!/^\d{9}$/.test(phone)) { errorDiv.innerText = 'Namba lazima iwe na tarakimu 9.'; return false; }
+        errorDiv.innerText = '';
+        return code + phone;
+    }
+    function validateDawaPhone() {
+        const code = document.getElementById('dawa-country-code').value;
+        const phone = document.getElementById('dawa-phone').value.trim();
+        const errorDiv = document.getElementById('dawa-phone-error');
+        if (phone === '') { errorDiv.innerText = 'Weka namba yako ya simu.'; return false; }
+        if (!/^\d{9}$/.test(phone)) { errorDiv.innerText = 'Namba lazima iwe na tarakimu 9.'; return false; }
+        errorDiv.innerText = '';
+        return code + phone;
+    }
+
+    function tumaAppointment() {
+        const jina = document.getElementById('app-name').value;
+        const tarehe = document.getElementById('app-date').value;
+        const sababu = document.getElementById('app-reason').value;
+        const fullPhone = validateAppPhone();
+        if (!fullPhone) return;
+        const msg = `*MIADI MPYA*%0A%0AJina: ${jina}%0ATarehe ya kuja: ${tarehe}%0ASababu: ${sababu}%0ANamba ya simu: ${fullPhone}`;
+        window.open(`https://wa.me/255762286282?text=${msg}`, '_blank');
+    }
+
+    function tumaOda() {
+        const dawa = document.getElementById('dawa-type').value;
+        const loc = document.getElementById('dawa-location').value;
+        const fullPhone = validateDawaPhone();
+        if (!fullPhone) return;
+        const msg = `*ODA YA DAWA*%0A%0ADawa: ${dawa}%0AMahali: ${loc}%0ANamba ya simu: ${fullPhone}`;
+        window.open(`https://wa.me/255762286282?text=${msg}`, '_blank');
+    }
+
+    function tumaLalamiko() {
+        const txt = document.getElementById('msg-content').value;
+        const msg = `*MALALAMIKO*%0A%0AUjumbe: ${txt}`;
+        window.open(`https://wa.me/255762286282?text=${msg}`, '_blank');
+    }
+
+    function anzaRamli() {
+        const jina = document.getElementById('full-name').value.trim();
+        const s = document.getElementById('birth-day').value;
+        const m = document.getElementById('birth-month').value;
+        const jinsia = document.getElementById('gender').value;
+
+        if (!jina || jina.split(' ').length < 2) {
+            alert('Tafadhali weka jina lako kamili (angalau maneno mawili).');
+            return;
+        }
+
+        currentJina = jina;
+        currentS = s;
+        currentM = m;
+        currentJinsia = jinsia;
+
+        // Onyesha warning kwa sekunde 2 kisha loading
+        document.getElementById('page-ramli').style.display = 'none';
+        document.getElementById('warning-area').style.display = 'block';
+        
+        setTimeout(() => {
+            document.getElementById('warning-area').style.display = 'none';
+            document.getElementById('loading-area').style.display = 'block';
+        }, 2000);
+
+        setTimeout(() => {
+            document.getElementById('loading-area').style.display = 'none';
+            document.getElementById('cards-container').style.display = 'flex';
+            document.getElementById('send-results-container').style.display = 'block';
+            chakataRamli(jina, s, m, jinsia);
+        }, 5000); // 2 sec warning + 3 sec loading = 5 sec
+    }
+
+    function chakataRamli(jina, s, m, jinsia) {
+        const h1 = jina[0].toUpperCase();
+        
+        let idx = 1;
+        if ((m == 3 && s >= 21) || (m == 4 && s <= 19)) idx = 1;
+        else if ((m == 4 && s >= 20) || (m == 5 && s <= 20)) idx = 2;
+        else if ((m == 5 && s >= 21) || (m == 6 && s <= 20)) idx = 3;
+        else idx = (m % 3) + 1;
+
+        const d = NYOTA_DESC[idx] || NYOTA_DESC[1];
+        const sifaData = SIFA_DB[h1] || SIFA_DB['A'];
+        const jinaTraits = HERUFI_DB[h1] || ["Wewe ni mwenye heri","Wewe ni mtafutaji","Wewe ni mkarimu"];
+
+        // Tayarisha orodha za tiba 5 kutoka kwenye AYURVEDA_DB
+        const tibaZote = Object.values(AYURVEDA_DB);
+        const tibaChache = tibaZote.slice(0,5).map(t => t.name + ": " + t.uses[0].recipe);
+
+        currentResults = {
+            sifa: sifaData.traits.slice(0, 15),
+            kazi: sifaData.careers,
+            hatari: d.h.slice(0, 15),
+            lishe: d.d.slice(0, 5),
+            tibaAsili: tibaChache
+        };
+
+        const container = document.getElementById('cards-container');
+        container.innerHTML = `
+            <div class="card" onclick="expandCard(this)">
+                <div class="card-inner">
+                    <div class="card-back">
+                        JINA LAKO
+                        <small style="display:block; margin-top:10px;">Gusa kadi kuona maelezo</small>
+                    </div>
+                    <div class="card-front"><h3>${jina.toUpperCase()}</h3><ul><li>${jinaTraits.slice(0,5).join('</li><li>')}</li></ul></div>
+                </div>
+            </div>
+            <div class="card" onclick="expandCard(this)">
+                <div class="card-inner">
+                    <div class="card-back">
+                        SIFA ZAKO 15
+                        <small style="display:block; margin-top:10px;">Gusa kadi kuona maelezo</small>
+                    </div>
+                    <div class="card-front"><h3>SIFA 15</h3><ul><li>${sifaData.traits.slice(0,15).join('</li><li>')}</li></ul></div>
+                </div>
+            </div>
+            <div class="card" onclick="expandCard(this)">
+                <div class="card-inner">
+                    <div class="card-back">
+                        KAZI 5 ZINAZOKUFAA
+                        <small style="display:block; margin-top:10px;">Gusa kadi kuona maelezo</small>
+                    </div>
+                    <div class="card-front"><h3>KAZI 5</h3><ul><li>${sifaData.careers.map(c => c.title + ': ' + c.desc).join('</li><li>')}</li></ul></div>
+                </div>
+            </div>
+            <div class="card" onclick="expandCard(this)">
+                <div class="card-inner">
+                    <div class="card-back">
+                        HATARI ZA KIAFYA 15
+                        <small style="display:block; margin-top:10px;">Gusa kadi kuona maelezo</small>
+                    </div>
+                    <div class="card-front"><h3>HATARI 15</h3><ul><li>${d.h.slice(0,15).join('</li><li>')}</li></ul></div>
+                </div>
+            </div>
+            <div class="card" onclick="expandCard(this)">
+                <div class="card-inner">
+                    <div class="card-back">
+                        TIBA ZA ASILI (5)
+                        <small style="display:block; margin-top:10px;">Gusa kadi kuona maelezo</small>
+                    </div>
+                    <div class="card-front"><h3>TIBA 5 ZA ASILI</h3><ul><li>${tibaChache.join('</li><li>')}</li></ul></div>
+                </div>
+            </div>
+            <div class="card" onclick="expandCard(this)">
+                <div class="card-inner">
+                    <div class="card-back">
+                        SAYARI NA UNENE
+                        <small style="display:block; margin-top:10px;">Gusa kadi kuona maelezo</small>
+                    </div>
+                    <div class="card-front"><h3>Ushawishi wa Sayari</h3><ul><li>${Object.values(PLANET_OBESITY_DB).slice(0,5).map(p => p.name + ": " + p.impact + " (" + p.percentage + ")").join('</li><li>')}</li></ul></div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Kazi ya kupanua kadi (expand on click)
+    window.expandCard = function(card) {
+        // Kwanza ondoa class 'expanded' kwenye kadi zote
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('expanded'));
+        // Kisha ongeza kwenye kadi iliyobofywa
+        card.classList.add('expanded');
+    };
+
+    function tumaMatokeoKwaWhatsApp() {
+        if (!currentResults) {
+            alert('Matokeo bado hayajapatikana. Subiri kidogo.');
+            return;
+        }
+        // Tuma taarifa zote kwa WhatsApp (jina, tarehe, jinsia na matokeo)
+        let message = `*MATOKEO YA RAMLI*%0A%0A`;
+        message += `Jina: ${currentJina}%0A`;
+        message += `Tarehe: ${currentS}/${currentM}%0A`;
+        message += `Jinsia: ${currentJinsia}%0A%0A`;
+        message += `*SIFA ZAKE (15)*%0A`;
+        currentResults.sifa.slice(0,5).forEach(t => message += `- ${t}%0A`);
+        message += `%0A*KAZI ZINAZOMFAA*%0A`;
+        currentResults.kazi.forEach(k => message += `- ${k.title}%0A`);
+        message += `%0A*HATARI ZA KIAFYA*%0A`;
+        currentResults.hatari.slice(0,5).forEach(h => message += `- ${h}%0A`);
+        message += `%0A*TIBA ZA ASILI*%0A`;
+        currentResults.tibaAsili.slice(0,3).forEach(t => message += `- ${t}%0A`);
+        window.open(`https://wa.me/255762286282?text=${message}`, '_blank');
+    }
+</script>
+</body>
+</html>
